@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/icon.png</file>
+    <file>images/water.png</file>
+    <file>images/refresh.png</file>
+    <file>images/fan.png</file>
+    <file>images/gear.png</file>
+    <file>images/blind.png</file>
+    <file>images/leaf.png</file>
+    <file>images/cooler.png</file>
+    <file>images/heater.png</file>
+    <file>images/co2.png</file>
+    <file>images/ph.png</file>
+    <file>images/nutrient.png</file>
+    <file>images/ab_pump.png</file>
+    <file>images/nu_pump.png</file>
+  </qresource>
+</RCC>

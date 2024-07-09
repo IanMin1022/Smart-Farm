@@ -144,7 +144,7 @@ class Multicast:
                 self.sender = MulticastSender(group=Multicast.LOCAL_GROUP) 
                 self.receiver = MulticastReceiver(group=Multicast.LOCAL_GROUP)
                 
-            print(self.connection) 
+            print(f"[INFO] Connection: {self.connection}") 
             Multicast.config["connection"] = self.connection
             with open('config.json', 'w') as file:
                 json.dump(Multicast.config, file, indent=4)
@@ -259,6 +259,6 @@ class Multicast:
         self.thread_loop = False
         self.thread.join()
 
-print("Hello World")
+print("[INFO] Multicast Loop is running...")
 multi = Multicast()
 multi.start()

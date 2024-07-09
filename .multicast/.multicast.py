@@ -17,7 +17,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(17,GPIO.OUT)
 lock = threading.Lock()
 
-class NetworkAdaptiveSensorDistributor:
+class Multicast:
     with open('config.json', 'r') as file:
         config = json.load(file)
         
@@ -82,7 +82,7 @@ class NetworkAdaptiveSensorDistributor:
         crc = [init_crc >> 8, init_crc & 0xFF]
             
         for byte in data:
-            tmp = NetworkAdaptiveSensorDistributor.crc16_table[crc[0] ^ byte]
+            tmp = Multicast.crc16_table[crc[0] ^ byte]
             crc[0] = (tmp & 0xFF) ^ crc[1]
             crc[1] = tmp>>8
         
@@ -93,7 +93,6 @@ class NetworkAdaptiveSensorDistributor:
         value = data.payload
 
         if len(value) == 7:
-            print(value)
             if value[1] in [0x41, 0x42, 0x43, 0x44, 0x45, 0x46]:
                 GPIO.output(17, GPIO.HIGH)
                 
@@ -139,16 +138,16 @@ class NetworkAdaptiveSensorDistributor:
     def _connect(self):
         try:
             if self.connection == "external":
-                self.sender = MulticastSender(group=NetworkAdaptiveSensorDistributor.EXTERNAL_GROUP) 
-                self.receiver = MulticastReceiver(group=NetworkAdaptiveSensorDistributor.EXTERNAL_GROUP)
+                self.sender = MulticastSender(group=Multicast.EXTERNAL_GROUP) 
+                self.receiver = MulticastReceiver(group=Multicast.EXTERNAL_GROUP)
             else:
-                self.sender = MulticastSender(group=NetworkAdaptiveSensorDistributor.LOCAL_GROUP) 
-                self.receiver = MulticastReceiver(group=NetworkAdaptiveSensorDistributor.LOCAL_GROUP)
+                self.sender = MulticastSender(group=Multicast.LOCAL_GROUP) 
+                self.receiver = MulticastReceiver(group=Multicast.LOCAL_GROUP)
                 
             print(self.connection) 
-            NetworkAdaptiveSensorDistributor.config["connection"] = self.connection
+            Multicast.config["connection"] = self.connection
             with open('config.json', 'w') as file:
-                json.dump(NetworkAdaptiveSensorDistributor.config, file, indent=4)
+                json.dump(Multicast.config, file, indent=4)
                 
             self.receiver.onRecv(self._on_async_recv, unpickling=True)
             self.receiver.loopStart()
@@ -261,5 +260,5 @@ class NetworkAdaptiveSensorDistributor:
         self.thread.join()
 
 print("Hello World")
-NASD = NetworkAdaptiveSensorDistributor()
-NASD.start()
+multi = Multicast()
+multi.start()

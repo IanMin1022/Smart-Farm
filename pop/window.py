@@ -9,8 +9,8 @@ from . import crc16_table, crc16_modbus
 
 
 class Window:
-    ACT_Window = 0x20
-    BRD_Window = 0x41
+    ACT_Window = 0x41
+    BRD_Window = 0x20
     
     def __init__(self, group=None):
         if group is None:
@@ -67,9 +67,9 @@ class Window:
         _value = 1000 - self._value
         if _value <= 0:
             _value = 0
-        elif _value >= 375:
-            _value = 90
+        elif _value >= 500:
+            _value = 120
         else:
-            _value = round(_value * 0.24) # 90 / 375
+            _value = round(_value * 0.24) # 120 / 500
 
         return _value

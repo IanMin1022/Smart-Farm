@@ -6,13 +6,13 @@ from genlib.udp import MulticastReceiver
 
 
 class Tphg:
-    BRD_TH = 0x03
-    BRD_P = 0x07
-    BRD_G = 0x08
+    BRD_TH = 0x0003
+    BRD_P = 0x0007
+    BRD_G = 0x0008
     
     def __init__(self, group=None):
         if group is None:
-            self._receiver = MulticastReceiver(group='239.4.18.0')
+            self._receiver = MulticastReceiver(group='239.4.18.0', port=7322)
         else:
             self._receiver = MulticastReceiver(group=group)
             
@@ -34,23 +34,18 @@ class Tphg:
             
     def _on_async_recv(self, sender, message):
         _data = copy.deepcopy(message)
-        if len(_data.payload) == 8:
+        if len(_data.payload) > 0:
             try:
-                _data = list(struct.unpack('8B', _data.payload))
-                if _data[1] == Tphg.BRD_TH:
-                    if format(_data[4], '08b')[0] == "1":
-                        self._value[0], self._value[2] = (_data[4]- 0x80) - 128, _data[3]
+                _data = list(struct.unpack(f'{_data.payload[1]+2}B', _data.payload))
+                if _data[0] == Tphg.BRD_TH:
+                    if format(_data[3], '08b')[0] == "1":
+                        self._value[0], self._value[2] = (_data[3]- 0x80) - 128, _data[2]
                     else:
-                        self._value[0], self._value[2] = _data[4], _data[3]
-                elif _data[1] == Tphg.BRD_P:
-                    self._value[1] = ((_data[3] & 0x0F) << 8) + _data[4]
-            except TypeError:
-                pass
-        elif len(_data.payload) == 10:
-            try:
-                _data = list(struct.unpack('10B', _data.payload))
-                if _data[1] == Tphg.BRD_G:
-                    self._value[3] = (_data[3] << 24) + (_data[4] << 16) + (_data[5] << 8) + _data[6]
+                        self._value[0], self._value[2] = _data[3], _data[2]
+                elif _data[0] == Tphg.BRD_P:
+                    self._value[1] = ((_data[3] & 0x0F) << 8) + _data[3]
+                elif _data[0] == Tphg.BRD_G:
+                    self._value[3] = (_data[2] << 24) + (_data[3] << 16) + (_data[4] << 8) + _data[5]
             except TypeError:
                 pass
             

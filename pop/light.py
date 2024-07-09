@@ -6,11 +6,11 @@ from genlib.udp import MulticastReceiver
 
 
 class Light:
-    BRD_Light = 0x01
+    BRD_Light = 0x0001
     
     def __init__(self, group=None):
         if group is None:
-            self._receiver = MulticastReceiver(group='239.4.18.0')
+            self._receiver = MulticastReceiver(group='239.4.18.0', port=7322)
         else:
             self._receiver = MulticastReceiver(group=group)
             
@@ -32,11 +32,11 @@ class Light:
             
     def _on_async_recv(self, sender, message):
         _data = copy.deepcopy(message)
-        if len(_data.payload) == 8:
+        if len(_data.payload) > 0:
             try:
-                _data = list(struct.unpack('8B', _data.payload))
-                if _data[1] == Light.BRD_Light:
-                    _value = ((_data[3] & 0x0FF) << 8)  + _data[4]
+                _data = list(struct.unpack(f'{_data.payload[1]+2}B', _data.payload))
+                if _data[0] == Light.BRD_Light:
+                    _value = ((_data[2] & 0x0FF) << 8)  + _data[3]
                     self._value = _value
             except TypeError:
                 pass

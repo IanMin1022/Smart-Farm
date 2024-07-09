@@ -1,29 +1,22 @@
 from genlib.udp import MulticastSender
 
-from . import crc16_table, crc16_modbus
-
-
 class Heater:
-    ACT_Heater = 0x42
+    ACT_Heater = 0x0042
     
     def __init__(self, position=None, group=None):
         if group is None:
-            self._sender = MulticastSender(group='239.4.18.0')
+            self._sender = MulticastSender(group='239.4.18.0', port=7323)
         else:
             self._sender = MulticastSender(group=group)
             
         self._toggle = False
             
     def _encode(self, value):
-        data = [0x76]
+        data = []
         data.append(Heater.ACT_Heater)
         data.append(0x01)        
         hex_value = int(hex(value), 16)
-        data.append(hex_value)        
-        crc_value = crc16_modbus(bytes([data[2], data[3]]))
-        data.append(crc_value >> 8)
-        data.append(crc_value & 0x0FF)
-        data.append(0x3e)
+        data.append(hex_value)
         
         return data
                 

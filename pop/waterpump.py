@@ -1,14 +1,12 @@
 from genlib.udp import MulticastSender
 
-from . import crc16_table, crc16_modbus
-
 
 class WaterPump:
-    ACT_WaterPump = 0x44
+    ACT_WaterPump = 0x0044
     
     def __init__(self, position=None, group=None):
         if group is None:
-            self._sender = MulticastSender(group='239.4.18.0')
+            self._sender = MulticastSender(group='239.4.18.0', port=7323)
         else:
             self._sender = MulticastSender(group=group)
             
@@ -19,11 +17,7 @@ class WaterPump:
         data.append(WaterPump.ACT_WaterPump)
         data.append(0x01)        
         hex_value = int(hex(value), 16)
-        data.append(hex_value)        
-        crc_value = crc16_modbus(bytes([data[2], data[3]]))
-        data.append(crc_value >> 8)
-        data.append(crc_value & 0x0FF)
-        data.append(0x3e)
+        data.append(hex_value)
         
         return data
     

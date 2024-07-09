@@ -23,7 +23,6 @@ class Multicast:
         
     LOCAL_GROUP = config["local_group"]
     EXTERNAL_GROUP = config["external_group"]
-    DEFAULT_PORT = 7321 
     
     crc16_table = [
         0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
@@ -71,7 +70,7 @@ class Multicast:
         self.receiver = None
         self.sender = None
         self.loop = False
-        self.connection = "internal"
+        self.connection = "local"
         self.thread = threading.Thread(target=self._condition)
         self.thread_loop = True
         
@@ -89,30 +88,23 @@ class Multicast:
         return (crc[0]|crc[1]<<8)
 
     def _on_async_recv(self, sender, message): #Multiple Unicast
+        serial_data = [0x76]
         data = copy.deepcopy(message)
-        value = data.payload
+        data = data.payload
+        print(data)
 
-        if len(value) == 7:
-            if value[1] in [0x41, 0x42, 0x43, 0x44, 0x45, 0x46]:
+        if len(data) > 0:
+            if data[0] in [0x41, 0x42, 0x43, 0x44, 0x45, 0x46]:
+                
                 GPIO.output(17, GPIO.HIGH)
                 
                 time.sleep(0.1)
-                self.Serial.write(bytes(bytearray(value)))
-                time.sleep(0.1)
-                
-                GPIO.output(17, GPIO.LOW)
-            elif value[1] == [0x45, 0x46]:
-                addr = value[1]
-                del value[1]
-                
-                value_1, value_2 = value.copy(), value.copy()
-                value_1.insert(1, addr[0])
-                value_2.insert(1, addr[1])
-                GPIO.output(17, GPIO.HIGH)
-                
-                time.sleep(0.1)
-                self.Serial.write(bytes(bytearray(value_1)))
-                self.Serial.write(bytes(bytearray(value_2)))
+                serial_data.extend(data)
+                crc_value = self._crc16_modbus(bytes([data[1], data[2]]))
+                serial_data.append(crc_value >> 8)
+                serial_data.append(crc_value & 0x0FF)
+                serial_data.append(0x3e)
+                self.Serial.write(bytes(bytearray(serial_data)))
                 time.sleep(0.1)
                 
                 GPIO.output(17, GPIO.LOW)
@@ -123,26 +115,26 @@ class Multicast:
     def _condition(self):
         while self.thread_loop: 
             try:
-                sock = socket.create_connection(('8.8.8.8', 53), timeout=1)
+                sock = socket.create_connection(('8.8.8.8', 53), timeout=2)
                 sock.close()
-                if self.connection == "internal":
+                if self.connection == "local":
                     self.connection = "external"
                     self.loop = False
             except (socket.timeout, socket.error):
                 if self.connection == "external":
-                    self.connection = "internal"
+                    self.connection = "local"
                     self.loop = False
                 
-            time.sleep(1)
+            time.sleep(0.1)
     
     def _connect(self):
         try:
             if self.connection == "external":
-                self.sender = MulticastSender(group=Multicast.EXTERNAL_GROUP) 
-                self.receiver = MulticastReceiver(group=Multicast.EXTERNAL_GROUP)
+                self.sender = MulticastSender(group=Multicast.EXTERNAL_GROUP, port=7322) 
+                self.receiver = MulticastReceiver(group=Multicast.EXTERNAL_GROUP, port=7323)
             else:
-                self.sender = MulticastSender(group=Multicast.LOCAL_GROUP) 
-                self.receiver = MulticastReceiver(group=Multicast.LOCAL_GROUP)
+                self.sender = MulticastSender(group=Multicast.LOCAL_GROUP, port=7322) 
+                self.receiver = MulticastReceiver(group=Multicast.LOCAL_GROUP, port=7323)
                 
             print(f"[INFO] Connection: {self.connection}") 
             Multicast.config["connection"] = self.connection
@@ -163,12 +155,14 @@ class Multicast:
         except:
             pass
 
-    def _loop(self):        
+    def _loop(self):
         data = []
+        udp_data = []
         addr = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x20]
         
         while True:
             data.clear()
+            udp_data.clear()
             if not self.loop:
                 self._close()
                 time.sleep(0.1)
@@ -195,12 +189,8 @@ class Multicast:
                                 val = self._crc16_modbus(bytes([data[2], data[3]]))
                                 val = [val>>8, val&0x0FF]
                                 if data[4:6] == val:
-                                    packed_data = struct.pack('7B', *data)
-                                    if data[1] == addr[4]:
-                                        self.sender.sendTo(packed_data)
-                                    elif data[1] == addr[5]:
-                                        self.sender.sendTo(packed_data)
-                                break
+                                    udp_data = data[1:3+data[2]]
+                                    break
                             elif len(data) > 7:
                                 data.clear()
                         elif data[2] == 0x02:
@@ -209,20 +199,8 @@ class Multicast:
                                 val = self._crc16_modbus(bytes([data[2], data[3], data[4]]))
                                 val = [val>>8, val&0x0FF]
                                 if data[5:7] == val:
-                                    packed_data = struct.pack('8B', *data)
-                                    if data[1] == addr[0]:
-                                        self.sender.sendTo(packed_data)
-                                    elif data[1] == addr[1]:
-                                        self.sender.sendTo(packed_data)
-                                    elif data[1] == addr[2]:
-                                        self.sender.sendTo(packed_data)
-                                    elif data[1] == addr[3]:
-                                        self.sender.sendTo(packed_data)
-                                    elif data[1] == addr[6]:
-                                        self.sender.sendTo(packed_data)
-                                    elif data[1] == addr[8]:
-                                        self.sender.sendTo(packed_data)                                                                            
-                                break
+                                    udp_data = data[1:3+data[2]]
+                                    break
                             elif len(data) > 8:
                                 data.clear()
                         elif data[2] == 0x04:
@@ -231,10 +209,8 @@ class Multicast:
                                 val = self._crc16_modbus(bytes([data[2], data[3], data[4], data[5], data[6]]))
                                 val = [val>>8, val&0x0FF]                                
                                 if data[7:9] == val:
-                                    packed_data = struct.pack('10B', *data)
-                                    if data[1] == addr[7]:
-                                        self.sender.sendTo(packed_data)
-                                break
+                                    udp_data = data[1:3+data[2]]
+                                    break
                             elif len(data) > 10:
                                 data.clear()
                         else:
@@ -248,6 +224,10 @@ class Multicast:
                 except KeyboardInterrupt:
                     self.stop()
                     sys.exit()
+            
+            if len(udp_data) > 0:
+                packed_data = struct.pack(f'{udp_data[1]+2}B', *udp_data)
+                self.sender.sendTo(packed_data)
                 
         self.receiver.loopStop()
         

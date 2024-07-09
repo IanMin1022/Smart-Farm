@@ -15,7 +15,6 @@ class SensorWidget(QWidget):
         super().__init__()
         self.setup()
         self.config = config
-        self.flag = False
         self.ser = config['port']
         
         self.light = Light()
@@ -70,25 +69,24 @@ class SensorWidget(QWidget):
         
         self._window_data = value
                 
-        while self.flag:
-            self._light_data = self.light.read()
-            self._co2_data = self.co2.read()
-            self._temp_data, self._press_data, self._humi_data, self._gas_data = self.tphg.read()
-            self._soil_data = self.soil.read()
-            self._waterlevel_data = self.waterlevel.read()
-            # self._doorstatus_data = self.doorstatus.read()
-            
-            if self._count < 30:
-                if self._gas_data is not None:
-                    if self._gas_data > self._gas_data_old:
-                        self._gas_data_old = self._gas_data
-                        self._count = 0
-                    else:
-                        self._count += 1
-                        
-                        if self._count == 10:
-                            self._gas_base = self._gas_data
-                            print(self._gas_base)
+        self._light_data = self.light.read()
+        self._co2_data = self.co2.read()
+        self._temp_data, self._press_data, self._humi_data, self._gas_data = self.tphg.read()
+        self._soil_data = self.soil.read()
+        self._waterlevel_data = self.waterlevel.read()
+        # self._doorstatus_data = self.doorstatus.read()
+        
+        if self._count < 30:
+            if self._gas_data is not None:
+                if self._gas_data > self._gas_data_old:
+                    self._gas_data_old = self._gas_data
+                    self._count = 0
+                else:
+                    self._count += 1
+                    
+                    if self._count == 10:
+                        self._gas_base = self._gas_data
+                        # print(self._gas_base)
             
     def _Light(self):
         if self._light_data:
@@ -133,7 +131,7 @@ class SensorWidget(QWidget):
             else:
                 gas_score = 0
 
-            print(humi_score, gas_score)
+            # print(humi_score, gas_score)
             air_quality_score = humi_score + gas_score
             
             if air_quality_score <= 50:

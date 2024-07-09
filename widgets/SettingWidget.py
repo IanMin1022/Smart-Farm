@@ -104,7 +104,9 @@ class SettingWidget(QWidget):
             self.ui.conn_button.setText('Disconnect')
             self.ui.conn_button.clicked.connect(self.onDisconnect)
             self.config['conn_state'].emit('Online', True)
-
+            self.ui.activate_box.setEnabled(False)
+            self.ui.activate_label.setStyleSheet("font: 75 28pt \"나눔스퀘어 Bold\";\n"
+"color: rgb(135, 135, 135);")
         else:
             QMessageBox.warning(self, 'Error!','Wrong port name')
 
@@ -119,6 +121,9 @@ class SettingWidget(QWidget):
         self.ui.conn_button.clicked.disconnect()
         self.ui.conn_button.clicked.connect(self.onConnect)
         self.ui.conn_button.setText('Connect')
+        self.ui.activate_box.setEnabled(True)
+        self.ui.activate_label.setStyleSheet("font: 75 28pt \"나눔스퀘어 Bold\";\n"
+"color: rgb(0, 135, 68);")
         
     def reconnect(self):
         con = self.config['port']

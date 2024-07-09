@@ -111,8 +111,8 @@ class Ui_Form(object):
         self.activate_box.setStyleSheet("QCheckBox::indicator { width: 35; height: 35; }")
         self.activate_box.setObjectName("activate_box")
         self.activate_label = QtWidgets.QLabel(Form)
-        self.activate_label.setGeometry(QtCore.QRect(503, 438, 420, 50))
-        self.activate_label.setStyleSheet("font: 75 30pt \"나눔스퀘어 Bold\";\n"
+        self.activate_label.setGeometry(QtCore.QRect(500, 439, 420, 50))
+        self.activate_label.setStyleSheet("font: 75 28pt \"나눔스퀘어 Bold\";\n"
 "color: rgb(0, 135, 68);")
         self.activate_label.setObjectName("activate_label")
         self.connection_area = QtWidgets.QLabel(Form)

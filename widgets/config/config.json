@@ -1,12 +1,12 @@
 {
     "freq_value": 1.0,
     "pump_value": 0,
-    "lfan_value": 0,
-    "rfan_value": 0,
-    "window_value": 0,
+    "lfan_value": 100,
+    "rfan_value": 100,
+    "window_value": 55,
     "heater_value": 0,
     "cooler_value": 0,
-    "r_value": 0,
+    "r_value": 255,
     "g_value": 0,
-    "b_value": 0
+    "b_value": 196
 }

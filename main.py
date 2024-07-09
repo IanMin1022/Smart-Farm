@@ -136,10 +136,10 @@ class Main(QWidget):
                 continue
             
             widget = self.ui.widgets.currentWidget()
-            self.sensor.work(self.actuator.window_value_return)
-            
+                        
             if widget is self.sensor:
-                self.sensor.work(self.actuator.window_value_return)
+                window_value = self.actuator.windows.read()
+                self.sensor.work(window_value)
             elif widget is self.actuator:
                 self.actuator.work()
             elif widget is self.cam:
@@ -148,14 +148,7 @@ class Main(QWidget):
             sleep(0.001)
     
     def onPaging(self, idx):
-        if idx == 0:
-            self.sensor.flag = True
-        elif idx == 1:
-            self.sensor.flag = False
-        elif idx == 2:
-            self.sensor.flag = False
-        elif idx == 3:
-            self.sensor.flag = False
+        if idx == 3:
             # self.setting.reconnect()
             self.setting.update_saved_value([
                 self.actuator.pump_value,

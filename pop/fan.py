@@ -44,15 +44,18 @@ class Fan:
         self._toggle = True
             
     def off(self):
-        data = self._encode(0)        
-        self._sender.sendTo(data)
+        data = self._encode(0)
+        for i in range(self.length):
+            self._sender.sendTo(data[i])
         self._toggle = False
     
     def toggle(self):
         self._toggle = not self._toggle        
         if self._toggle:
-            data = self._encode(100)        
-            self._sender.sendTo(data)
+            data = self._encode(100)
+            for i in range(self.length):
+                self._sender.sendTo(data[i])
         else:
-            data = self._encode(0)        
-            self._sender.sendTo(data)
+            data = self._encode(0)
+            for i in range(self.length):
+                self._sender.sendTo(data[i])

@@ -12,8 +12,8 @@ class Window:
     
     def __init__(self, group=None):
         if group is None:
-            self._sender = MulticastSender(group='239.4.18.0', port=7323)
-            self._receiver = MulticastReceiver(group='239.4.18.0', port=7322)
+            self._sender = MulticastSender(group='239.4.18.2', port=7323)
+            self._receiver = MulticastReceiver(group='239.4.18.2', port=7322)
         else:
             self._sender = MulticastSender(group=group)
             self._receiver = MulticastReceiver(group=group)

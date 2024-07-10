@@ -56,7 +56,13 @@ class SensorWidget(QWidget):
     
     def showEvent(self, e):
         if self.ser.isConnected():
-            self.timer.setInterval(self.config['period'] * 1000)
+            if self.config['period'] == 0:
+                self.timer.setInterval(0.1 * 1000)
+            elif self.config['period'] == 1:
+                self.timer.setInterval(0.5 * 1000)
+            elif self.config['period'] == 2:
+                self.timer.setInterval(1 * 1000)
+            
             self.timer.start()
             
     def hideEvent(self, e):

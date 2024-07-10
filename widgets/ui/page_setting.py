@@ -35,49 +35,29 @@ class Ui_Form(object):
         self.set_freq_label.setStyleSheet("font: 75 35pt \"나눔스퀘어 Bold\";\n"
 "color: rgb(0, 135, 68);")
         self.set_freq_label.setObjectName("set_freq_label")
-        self.set_freq_spin = QtWidgets.QDoubleSpinBox(Form)
-        self.set_freq_spin.setGeometry(QtCore.QRect(120, 230, 465, 80))
-        self.set_freq_spin.setStyleSheet("""
-                QDoubleSpinBox {
-                font: 75 30pt '나눔스퀘어 Bold';
-                padding-right: 0px; /* space for the buttons */
+        self.set_freq_combo = QtWidgets.QComboBox(Form)
+        self.set_freq_combo.setGeometry(QtCore.QRect(120, 230, 465, 80))
+        self.set_freq_combo.setStyleSheet("""
+                QComboBox {
+                font: 30pt '나눔스퀘어';
                 border: 2px solid rgb(128, 128, 128); /* boundary box */
                 border-radius: 5px; /* rounded corners */
-                padding-left: 30px; /* move text 10px to the right */
+                padding-left: 20px; /* move text 10px to the right */
+                padding-bottom: 7px; /* move text 7px to the top */
                 }
-                QDoubleSpinBox::up-button {
-                width: 50px; /* width of the up button */
-                height: 40px; /* height of the up button */
-                subcontrol-position: top right; /* position the up button */
+                QComboBox::drop-down {
+                width: 40px; /* width of the drop-down button */
+                height: 77px; /* height of the drop-down button */
                 }
-                QDoubleSpinBox::down-button {
-                width: 50px; /* width of the down button */
-                height: 40px; /* height of the down button */
-                subcontrol-position: bottom right; /* position the down button */
+                QComboBox::down-arrow {
+                width: 20px; /* width of the down arrow */
+                height: 20px; /* height of the down arrow */
                 }
-                QDoubleSpinBox::up-arrow {
-                width: 15px; /* width of the up arrow */
-                height: 15px; /* height of the up arrow */
-                }
-                QDoubleSpinBox::down-arrow {
-                width: 15px; /* width of the down arrow */
-                height: 15px; /* height of the down arrow */
-        }
         """
         )
-        font = QtGui.QFont()
-        font.setFamily("나눔스퀘어")
-        font.setPointSize(30)
-        self.set_freq_spin.setFont(font)
-        self.set_freq_spin.setDecimals(0)
-        self.set_freq_spin.setMinimum(1.0)
-        self.set_freq_spin.setMaximum(100.0)
-        self.set_freq_spin.setSingleStep(1.0)
-        self.set_freq_spin.setProperty("value", 5.0)
-        self.set_freq_spin.setObjectName("set_freq_spin")
-        font = QtGui.QFont()
-        font.setFamily("나눔스퀘어")
-        font.setPointSize(13)
+        self.set_freq_combo.setEditable(True)
+        self.set_freq_combo.setCurrentText("1 sec")
+        self.set_freq_combo.setObjectName("freq_combo")
         self.save_label = QtWidgets.QLabel(Form)
         self.save_label.setGeometry(QtCore.QRect(90, 340, 481, 60))
         self.save_label.setStyleSheet("font: 75 35pt \"나눔스퀘어 Bold\";\n"
@@ -207,7 +187,7 @@ class Ui_Form(object):
         self.connection_area.raise_()
         self.settings_area.raise_()
         self.set_freq_label.raise_()
-        self.set_freq_spin.raise_()
+        self.set_freq_combo.raise_()
         self.save_label.raise_()
         self.save_button.raise_()
         self.activate_box.raise_()

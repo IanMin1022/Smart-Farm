@@ -78,12 +78,14 @@ class UDP(socket.socket):
         sessoin_funcs = {self.STX:self.__cb_stx, self.STX_ACK:self.__cb_stx_ack, self.ETX:self.__cb_etx, self.ETX_ACK:self.__cb_etx_ack}
         
         while not self.__is_exit_recv_thread:
-            time.sleep(0.1)
             try:
+                self.settimeout(0.1)
                 message.payload, message.remote = self.recvfrom(self.__recv_size)
             except BlockingIOError:
                 continue
             except ConnectionResetError:
+                continue
+            except (socket.timeout, socket.error):
                 continue
 
             if message.payload in (self.STX, self.STX_ACK, self.ETX, self.ETX_ACK):

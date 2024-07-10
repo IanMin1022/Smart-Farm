@@ -13,7 +13,7 @@ class WaterPump:
         self._toggle = False
         
     def _encode(self, value):
-        data = [0x76]
+        data = []
         data.append(WaterPump.ACT_WaterPump)
         data.append(0x01)        
         hex_value = int(hex(value), 16)

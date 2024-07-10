@@ -91,21 +91,20 @@ class Multicast:
         serial_data = [0x76]
         data = copy.deepcopy(message)
         data = data.payload
-        print(data)
 
         if len(data) > 0:
             if data[0] in [0x41, 0x42, 0x43, 0x44, 0x45, 0x46]:
                 
                 GPIO.output(17, GPIO.HIGH)
                 
-                time.sleep(0.1)
+                time.sleep(0.01)
                 serial_data.extend(data)
                 crc_value = self._crc16_modbus(bytes([data[1], data[2]]))
                 serial_data.append(crc_value >> 8)
                 serial_data.append(crc_value & 0x0FF)
                 serial_data.append(0x3e)
                 self.Serial.write(bytes(bytearray(serial_data)))
-                time.sleep(0.1)
+                time.sleep(0.01)
                 
                 GPIO.output(17, GPIO.LOW)
                 

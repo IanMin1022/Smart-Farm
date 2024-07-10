@@ -58,7 +58,7 @@ class SettingWidget(QWidget):
             self.ui.port_combo.addItem(port)
     
     def hideEvent(self, e):
-        self.config['period'] = int(self.ui.set_freq_spin.value())
+        self.config['period'] = int(self.ui.set_freq_combo.currentIndex())
         #self.config['lcd'] = (self.ui.set_lcd_spin_row.value(), self.ui.set_lcd_spin_col.value())
         #self.config['font'] = self.ui.set_font_spin.value()
         
@@ -66,7 +66,7 @@ class SettingWidget(QWidget):
         return self.ui.activate_box.isChecked()
     
     def update_freq_value(self, value):
-        self.ui.set_freq_spin.setValue(value)
+        self.ui.set_freq_combo.setCurrentIndex(value)
     
     def update_saved_value(self, value):
         self.act_data_flag = True
@@ -88,6 +88,10 @@ class SettingWidget(QWidget):
     def setup(self):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.ui.set_freq_combo.addItem("0.1 sec")
+        self.ui.set_freq_combo.addItem("0.5 sec")
+        self.ui.set_freq_combo.addItem("1 sec")
+        self.ui.set_freq_combo.setCurrentIndex(2) 
 
     def onConnect(self):
         con = self.config['port']
@@ -148,7 +152,7 @@ class SettingWidget(QWidget):
         except FileNotFoundError:
             data = {}
             
-        data["freq_value"] = self.ui.set_freq_spin.value()
+        data["freq_value"] = self.ui.set_freq_combo.currentIndex() 
         # print(self.ui.set_freq_spin.value())
         
         if self.act_data_flag:

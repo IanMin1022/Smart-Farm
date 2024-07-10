@@ -133,6 +133,7 @@ class Main(QWidget):
                 self.setDefaultStyle(self.ui.sen_button)
                 self.setDefaultStyle(self.ui.act_button)
                 self.setDefaultStyle(self.ui.cam_button)
+                self.cam.onColor()
                 self.signals()
             else:
                 self.actuator.shutdown()

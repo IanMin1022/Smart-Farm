@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 import serial
 from time import sleep
 from .ui.page_setting import Ui_Form
-import sys
+import sys, os
 import glob
 import json
 
@@ -15,7 +15,9 @@ class SettingWidget(QWidget):
         self.timer = QTimer(self)
         self.config = config
         self.smartfarm_mode = 'normal'
-        self.config_path = './widgets/config/config.json'
+        
+        path = os.path.dirname(os.path.abspath(__file__))
+        self.config_path = f'{path}/config/config.json'
         self.ui.refresh_button.clicked.connect(self.onRefresh)
         self.ui.save_button.clicked.connect(self.onSave)
         self.ui.conn_button.clicked.connect(self.onConnect)

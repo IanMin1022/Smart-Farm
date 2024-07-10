@@ -110,7 +110,23 @@ class Main(QWidget):
                         data["g_value"],
                         data["b_value"],
                     ]
-                    json_file.close()                
+                    json_file.close()
+                    self.actuator.update_slide(act_value)
+                    self.actuator.update_led(led_value)
+                else:
+                    act_value = [
+                        0, 
+                        0, 
+                        0, 
+                        0, 
+                        0, 
+                        0,
+                    ]
+                    led_value = [
+                        0,
+                        0,
+                        0,
+                    ]
                     self.actuator.update_slide(act_value)
                     self.actuator.update_led(led_value)
                     

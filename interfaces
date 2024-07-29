@@ -1,0 +1,10 @@
+auto lo eth0 eth0:0
+
+iface lo inet loopback
+
+iface eth0 inet static
+	address 192.168.101.101
+	netmask 255.255.255.0
+	up ip route add 239.4.2.0/24 dev eth0
+
+iface eth0:0 inet dhcp

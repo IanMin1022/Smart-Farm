@@ -156,79 +156,79 @@ class Multicast:
 
     def _loop(self):
         data = []
-        udp_data = []
-        addr = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x20]
-        
-        while True:
-            data.clear()
-            udp_data.clear()
-            if not self.loop:
-                self._close()
-                time.sleep(0.1)
-                self._connect()
+        send_data = []
 
-            while self.loop:
-                try:
-                    with lock:
-                        self.Serial.flush()
-                        byte = self.Serial.read()
-                        byte = ord(byte)
-                        # print(byte)
-                        if byte == 0x76:
-                            data.clear()
+        while True:
+            try:
+                data.clear()
+                send_data.clear()
+                if not self.loop:
+                    self._close()
+                    time.sleep(0.1)
+                    self._connect()
+
+                while self.loop:
+                    try:
+                        with lock:
+                            self.Serial.flush()
+                            byte = self.Serial.read()
+                            byte = ord(byte)
+                            # print(byte)
+                            if byte == 0x76:
+                                data.clear()
+                                
+                            data.append(byte)
                             
-                        data.append(byte)
-                        if not data[0] == 0x76:
-                            data.clear()
-                        elif len(data) < 3:
-                            continue
-                        elif data[2] == 0x01:
-                            if len(data) == 7 and data[-1] == 0x3e:
-                                # print(data)
-                                val = self._crc16_modbus(bytes([data[2], data[3]]))
-                                val = [val>>8, val&0x0FF]
-                                if data[4:6] == val:
-                                    udp_data = data[1:3+data[2]]
-                                    break
-                            elif len(data) > 7:
+                            if not data[0] == 0x76:
                                 data.clear()
-                        elif data[2] == 0x02:
-                            if len(data) == 8 and data[-1] == 0x3e:
-                                # print(data)
-                                val = self._crc16_modbus(bytes([data[2], data[3], data[4]]))
-                                val = [val>>8, val&0x0FF]
-                                if data[5:7] == val:
-                                    udp_data = data[1:3+data[2]]
-                                    break
-                            elif len(data) > 8:
+                            elif len(data) < 3:
+                                continue
+                            elif data[2] == 0x01:
+                                if len(data) == 7 and data[-1] == 0x3e:
+                                    # print(data)
+                                    val = self._crc16_modbus(bytes([data[2], data[3]]))
+                                    val = [val>>8, val&0x0FF]
+                                    if data[4:6] == val:
+                                        send_data = data[1:3 + data[2]]
+                                        break
+                                elif len(data) > 7:
+                                    data.clear()
+                            elif data[2] == 0x02:
+                                if len(data) == 8 and data[-1] == 0x3e:
+                                    # print(data)
+                                    val = self._crc16_modbus(bytes([data[2], data[3], data[4]]))
+                                    val = [val>>8, val&0x0FF]
+                                    if data[5:7] == val:
+                                        send_data = data[1:3 + data[2]]
+                                        break
+                                elif len(data) > 8:
+                                    data.clear()
+                            elif data[2] == 0x04:
+                                if len(data) == 10:
+                                    # print(data)
+                                    val = self._crc16_modbus(bytes([data[2], data[3], data[4], data[5], data[6]]))
+                                    val = [val>>8, val&0x0FF]                                
+                                    if data[7:9] == val:
+                                        send_data = data[1:3 + data[2]]
+                                        break
+                                elif len(data) > 10:
+                                    data.clear()
+                            else:
                                 data.clear()
-                        elif data[2] == 0x04:
-                            if len(data) == 10:
-                                # print(data)
-                                val = self._crc16_modbus(bytes([data[2], data[3], data[4], data[5], data[6]]))
-                                val = [val>>8, val&0x0FF]                                
-                                if data[7:9] == val:
-                                    udp_data = data[1:3+data[2]]
-                                    break
-                            elif len(data) > 10:
-                                data.clear()
-                        else:
-                            data.clear()
-                    time.sleep(0.001)
-                except TypeError:
-                    pass
-                except OSError as e:
-                    if e.errno == 101:
+                        time.sleep(0.001)
+                    except TypeError:
                         pass
-                except KeyboardInterrupt:
-                    self.stop()
-                    sys.exit()
-            
-            if len(udp_data) > 0:
-                packed_data = struct.pack(f'{udp_data[1]+2}B', *udp_data)
-                self.sender.sendTo(packed_data)
                 
-        self.receiver.loopStop()
+                if len(send_data) > 0:
+                    packed_data = struct.pack(f'{send_data[1]+2}B', *send_data)
+                    self.sender.sendTo(packed_data)            
+            except OSError as e:
+                if e.errno == 101:
+                    pass
+            except KeyboardInterrupt:
+                self.receiver.loopStop()
+                self.stop()
+                sys.exit()
         
     def start(self):
         self.thread.start()

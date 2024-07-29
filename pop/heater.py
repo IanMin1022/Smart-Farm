@@ -5,7 +5,7 @@ class Heater:
     
     def __init__(self, position=None, group=None):
         if group is None:
-            self._sender = MulticastSender(group='239.4.18.0', port=7323)
+            self._sender = MulticastSender(group='239.4.2.0', port=7323)
         else:
             self._sender = MulticastSender(group=group)
             

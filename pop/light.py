@@ -10,7 +10,7 @@ class Light:
     
     def __init__(self, group=None):
         if group is None:
-            self._receiver = MulticastReceiver(group='239.4.18.0', port=7322)
+            self._receiver = MulticastReceiver(group='239.4.2.0', port=7322)
         else:
             self._receiver = MulticastReceiver(group=group)
             

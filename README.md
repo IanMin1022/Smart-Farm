@@ -1,13 +1,18 @@
 # How to use
 
-add the following on network interfaces with your network device
+Install genlib pacakge 
+<br>
 
 ```
-up ip route add 239.4.18.0/24 dev eth0
+pip install genlib
 ```
 
-or run the following command on your terminal with your network device
+<br>
+If you are on ARM architecture disable following line from udp.py
+</br>
+
+<br>
 
 ```
-sudo ip route add 239.4.18.0/24 dev eth0
+# self.sendTo(b'', (ip, 0)) #dummpy send
 ```

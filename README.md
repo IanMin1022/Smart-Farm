@@ -8,7 +8,7 @@ pip install genlib
 ```
 
 <br>
-If you are on ARM architecture disable following line from udp.py
+If you are on an ARM architecture, disable following line from udp.py
 </br>
 
 <br>

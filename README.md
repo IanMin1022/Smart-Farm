@@ -1,13 +1,7 @@
 # How to use
 
-add the following on network interfaces with your network device
-
 ```
-up ip route add 239.4.18.0/24 dev eth0
+python3 main.py
 ```
 
-or run the following command on your terminal with your network device
-
-```
-sudo ip route add 239.4.18.0/24 dev eth0
-```
+The backend of the UI actually doesn't reflect the port. If you want to use more than ttyS0, you may need to modify SettingWidget.py and .multicast.py.

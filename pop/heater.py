@@ -7,7 +7,7 @@ class Heater:
         if group is None:
             self._sender = MulticastSender(group='239.4.2.0', port=7323)
         else:
-            self._sender = MulticastSender(group=group)
+            self._sender = MulticastSender(group=group, port=7323)
             
         self._toggle = False
             

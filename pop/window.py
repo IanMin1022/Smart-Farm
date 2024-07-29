@@ -15,8 +15,8 @@ class Window:
             self._sender = MulticastSender(group='239.4.2.0', port=7323)
             self._receiver = MulticastReceiver(group='239.4.2.0', port=7322)
         else:
-            self._sender = MulticastSender(group=group)
-            self._receiver = MulticastReceiver(group=group)
+            self._sender = MulticastSender(group=group, port=7323)
+            self._receiver = MulticastReceiver(group=group, port=7322)
             
         self._receiver.onRecv(self._on_async_recv, unpickling=True)
         self._receiver.loopStart()

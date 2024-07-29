@@ -14,7 +14,7 @@ class Tphg:
         if group is None:
             self._receiver = MulticastReceiver(group='239.4.2.0', port=7322)
         else:
-            self._receiver = MulticastReceiver(group=group)
+            self._receiver = MulticastReceiver(group=group, port=7322)
             
         self._receiver.onRecv(self._on_async_recv, unpickling=True)
         self._receiver.loopStart()

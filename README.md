@@ -1,13 +1,8 @@
 # How to use
 
-add the following on network interfaces with your network device
+Update your network interfaces by referring to the interfaces file. If you are in an external-only environment, you probably won't need to change anything, but be sure to check your router settings.
 
-```
-up ip route add 239.4.18.0/24 dev eth0
-```
+<br>
 
-or run the following command on your terminal with your network device
+Make a daemon to run .multicast.py. If your system is different, you may need to modify the script, including config.json.
 
-```
-sudo ip route add 239.4.18.0/24 dev eth0
-```

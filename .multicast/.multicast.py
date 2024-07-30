@@ -65,13 +65,13 @@ class Multicast:
             baudrate=115200,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=1,
+            timeout=1e-3,
         )
         self.receiver = None
         self.sender = None
         self.loop = False
         self.connection = "local"
-        self.thread = threading.Thread(target=self._condition)
+        self.thread = threading.Thread(target=self._condition, daemon=True)
         self.thread_loop = True
         
     def __del__(self):
@@ -215,7 +215,7 @@ class Multicast:
                                     data.clear()
                             else:
                                 data.clear()
-                        time.sleep(0.001)
+                        # time.sleep(0.001)
                     except TypeError:
                         pass
                 
